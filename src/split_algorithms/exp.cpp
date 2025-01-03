@@ -1,4 +1,4 @@
-#include "split_algorithm.hpp"
+#include "split_algorithms.hpp"
 #include <assert.h>
 
 #define PARTITION_COUNT (1 << (M + 1))

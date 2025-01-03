@@ -1,5 +1,5 @@
 #include "rtree.hpp"
-#include "split_algorithms/split_algorithm.hpp"
+#include "split_algorithms/split_algorithms.hpp"
 
 int best_child(Node* node, Item item) {
   int id = -1;

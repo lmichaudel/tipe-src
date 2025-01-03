@@ -17,4 +17,5 @@ bool intersect(const Rect& r1, const Rect& r2);
 Rect merge(const Rect& r1, const Rect& r2);
 Rect inter(const Rect& r1, const Rect& r2);
 float dead_space(const Rect& r1, const Rect& r2);
+
 #endif // RECT_HPP
