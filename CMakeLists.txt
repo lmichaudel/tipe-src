@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-project(TIPE)
+project(TIPE LANGUAGES CXX)
 
-#if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-#    set(ASAN_FLAGS "-fsanitize=address -g -O1 -fno-omit-frame-pointer")
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ASAN_FLAGS}")
-#    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} ${ASAN_FLAGS}")
-#endif ()
+add_compile_options(-Wall -pedantic)
 
 find_package(SDL2 REQUIRED)
 
@@ -26,7 +22,7 @@ add_executable(TIPE
         src/rtree.hpp
         src/rtree.cpp
 
-        src/split_algorithms/split_algorithm.hpp
+        src/split_algorithms/split_algorithms.hpp
         src/split_algorithms/exp.cpp
 )
 
