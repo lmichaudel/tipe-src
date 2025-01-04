@@ -1,9 +1,9 @@
 #ifndef RTREE_HPP
 #define RTREE_HPP
 
-#define ITEM_COUNT 125
-#define M 6
-#define UTILIZATION_FACTOR 0.40f
+#define ITEM_COUNT 500
+#define M 7
+#define UTILIZATION_FACTOR 0.30f
 
 #include "rect.hpp"
 
@@ -73,6 +73,7 @@ public:
   Node* root;
 
   RTree();
+  ~RTree();
 
   std::vector<Item> search(Rect window);
   void insert(Item item);

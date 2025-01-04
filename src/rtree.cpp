@@ -86,3 +86,13 @@ RTree::RTree() {
 
   root = n;
 }
+
+void delete_rec(Node* node) {
+  if (node->kind == BRANCH) {
+    for (int i = 0; i < node->count; i++)
+      delete_rec(node->children[i]);
+  }
+
+  delete node;
+}
+RTree::~RTree() { delete_rec(root); }
