@@ -1,7 +1,7 @@
 #include "rtree.hpp"
 #include "split_algorithms/split_algorithms.hpp"
 
-int best_child(Node* node, Item item) {
+int RTree::best_child(Node* node, Item item) {
   int id = -1;
   double min_augment = std::numeric_limits<double>::max();
 
@@ -19,34 +19,18 @@ int best_child(Node* node, Item item) {
 void RTree::handle_overflow(Node* node) {
   Node* parent = node->parent;
   int id_in_parent = node->id_in_parent;
-
   auto [u, v] = split_exp(node);
-
   delete node;
 
-  // Recréation de la racine
   if (parent == nullptr) {
-    Node* new_root = Node::empty(BRANCH, nullptr);
-    new_root->count = 2;
-    new_root->mbr = merge(u->mbr, v->mbr);
-    new_root->children[0] = u;
-    new_root->children[1] = v;
-
-    u->parent = new_root;
-    u->id_in_parent = 0;
-    v->parent = new_root;
-    v->id_in_parent = 1;
-
-    root = new_root;
+    root = Node::empty(BRANCH, nullptr);
+    root->count = 2;
+    root->mbr = merge(u->mbr, v->mbr);
+    root->set_child(0, u);
+    root->set_child(1, v);
   } else {
-    parent->children[id_in_parent] = u;
-    parent->children[parent->count] = v;
-
-    u->id_in_parent = id_in_parent;
-    v->id_in_parent = parent->count;
-    u->parent = parent;
-    v->parent = parent;
-
+    parent->set_child(id_in_parent, u);
+    parent->set_child(parent->count, v);
     parent->count++;
     parent->recalculate_mbr();
 
@@ -66,8 +50,7 @@ void RTree::insert_rec(Node* node, Item item) {
       handle_overflow(node);
     }
   } else {
-    int best_child_index = best_child(node, item);
-    insert_rec(node->children[best_child_index], item);
+    insert_rec(node->children[best_child(node, item)], item);
   }
 }
 
@@ -76,7 +59,7 @@ void RTree::search_rec(Node* node, Rect window, std::vector<Item>& results) {
     if (node->is_leaf()) {
       for (int i = 0; i < node->count; i++) {
         Item item = node->data[i];
-        if (window.contains(item.x, item.y))
+        if (intersect(item.as_rect(), window))
           results.push_back(item);
       }
     } else {

@@ -1,7 +1,7 @@
 #include "gfx.hpp"
 
 App* create_application() {
-  App* s = (App*)malloc(sizeof(App));
+  App* s = new App;
   SDL_Init(SDL_INIT_VIDEO);
 
   s->window = SDL_CreateWindow("TIPE", SDL_WINDOWPOS_CENTERED,
@@ -16,11 +16,12 @@ App* create_application() {
 void run(App* s, void draw(App*)) {
   s->running = true;
   while (s->running) {
-    while (!SDL_TICKS_PASSED(SDL_GetTicks64(), s->tick + 16)) {
-    }
+    // while (!(static_cast<Sint32>((s->tick + 16) - (SDL_GetTicks64())) <= 0))
+    // {
+    // }
 
     // const float deltaTime = (SDL_GetTicks64() - s->tick) / 1000.0;
-    s->tick = SDL_GetTicks64();
+    // s->tick = SDL_GetTicks64();
 
     while (SDL_PollEvent(&s->event)) {
       switch (s->event.type) {
@@ -42,13 +43,13 @@ void run(App* s, void draw(App*)) {
 
   SDL_DestroyWindow(s->window);
   SDL_Quit();
-  free(s);
+  delete s;
 }
 
 void close(App* s) { s->running = false; }
 
-void draw_rect(App* s, float x, float y, float h, float w, int r, int g, int b,
-               int a) {
+void draw_rect(App* s, float x, float y, float h, float w, uint8_t r, uint8_t g,
+               uint8_t b, uint8_t a) {
 
   s->rect.x = x;
   s->rect.y = y;
@@ -59,7 +60,7 @@ void draw_rect(App* s, float x, float y, float h, float w, int r, int g, int b,
   SDL_RenderDrawRectF(s->renderer, &s->rect);
 }
 
-void draw_vector(App* s, float x, float y, float dx, float dy) {
+void draw_vector(App* s, int x, int y, int dx, int dy) {
   SDL_SetRenderDrawColor(s->renderer, 255, 0, 0, 255);
   // Calcul de la position de la tête de la flèche
   int endX = x + dx;
@@ -69,26 +70,26 @@ void draw_vector(App* s, float x, float y, float dx, float dy) {
   SDL_RenderDrawLine(s->renderer, x, y, endX, endY);
 
   // Taille de la pointe de la flèche
-  const float arrowHeadLength = 5.0f;
-  const float arrowHeadAngle = 3.14 / 6.0f; // 30 degrés
+  constexpr float arrowHeadLength = 5.0f;
+  constexpr float arrowHeadAngle = 3.14f / 6.0f; // 30 degrés
 
   // Calculer les points de la pointe de la flèche
   float angle = atan2(dy, dx);
   int arrowPoint1X =
-      endX - (int)(arrowHeadLength * cos(angle + arrowHeadAngle));
+      endX - static_cast<int>(arrowHeadLength * cos(angle + arrowHeadAngle));
   int arrowPoint1Y =
-      endY - (int)(arrowHeadLength * sin(angle + arrowHeadAngle));
+      endY - static_cast<int>(arrowHeadLength * sin(angle + arrowHeadAngle));
   int arrowPoint2X =
-      endX - (int)(arrowHeadLength * cos(angle - arrowHeadAngle));
+      endX - static_cast<int>(arrowHeadLength * cos(angle - arrowHeadAngle));
   int arrowPoint2Y =
-      endY - (int)(arrowHeadLength * sin(angle - arrowHeadAngle));
+      endY - static_cast<int>(arrowHeadLength * sin(angle - arrowHeadAngle));
 
   // Dessiner les deux lignes de la pointe de la flèche
   SDL_RenderDrawLine(s->renderer, endX, endY, arrowPoint1X, arrowPoint1Y);
   SDL_RenderDrawLine(s->renderer, endX, endY, arrowPoint2X, arrowPoint2Y);
 }
 
-void draw_circle(App* s, int x, int y, int radius) {
+void draw_circle(App* s, float x, float y, float radius) {
   SDL_SetRenderDrawColor(s->renderer, 255, 0, 0, 255);
 
   int status = 0;

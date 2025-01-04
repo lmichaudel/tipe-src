@@ -37,11 +37,7 @@ Rect merge(const Rect& r1, float x, float y) {
 }
 
 float enlargement(const Rect& mbr, const Rect& new_rect) {
-  // Fusionne les deux rectangles pour former leur union minimale
   Rect merged = merge(mbr, new_rect);
-
-  // Retourne la différence entre l'aire du rectangle fusionné et celle de
-  // l'original
   return merged.area() - mbr.area();
 }
 
@@ -55,17 +51,10 @@ Rect inter(const Rect& r1, const Rect& r2) {
   if (inter.a_x >= inter.b_x || inter.a_y >= inter.b_y) {
     inter = {0, 0, 0, 0};
   }
+
   return inter;
 }
 
 float dead_space(const Rect& r1, const Rect& r2) {
-  float areaMerged = merge(r1, r2).area();
-  float areaInter = inter(r1, r2).area();
-  float areaR1 = r1.area();
-  float areaR2 = r2.area();
-
-  return areaInter;
-  return areaMerged - (areaR1 + areaR2 - areaInter);
+  return inter(r1, r2).area();
 }
-
-bool Rect::contains(int x, int y) { return false; }

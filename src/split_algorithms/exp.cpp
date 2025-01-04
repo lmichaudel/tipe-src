@@ -29,7 +29,7 @@ void grow_to_mask(Rect rects[M + 1], int mask, GrowableRect* u,
 // Calcutate the best distribution of M+1 rectangles as a bitmask
 int best_distribution(Rect rects[M + 1]) {
   int current_best = 0;
-  float current_best_value = std::numeric_limits<double>::max();
+  float current_best_value = std::numeric_limits<float>::max();
 
   for (int m = 0; m < PARTITION_COUNT; m++) {
     GrowableRect a, b;

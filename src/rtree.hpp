@@ -3,9 +3,11 @@
 
 #define ITEM_COUNT 125
 #define M 6
-#define UTILIZATION_FACTOR 0.0f
+#define UTILIZATION_FACTOR 0.40f
 
 #include "rect.hpp"
+
+#include <assert.h>
 #include <vector>
 
 typedef enum Kind {
@@ -27,12 +29,11 @@ public:
   int count;
   Rect mbr;
   Node* parent = nullptr;
-  int id_in_parent; // Indique où se trouve ce noud dans la liste 'children' de
-                    // son parent
+  int id_in_parent;
 
   union {
-    Node* children[M + 1]; // Si c'est une branche
-    Item data[M + 1];      // Si c'est une feuille
+    Node* children[M + 1];
+    Item data[M + 1];
   };
 
   static Node* empty(Kind kind = LEAF, Node* parent = nullptr) {
@@ -41,12 +42,6 @@ public:
     n->kind = kind;
     n->parent = parent;
 
-    if (kind == BRANCH) {
-      for (int i = 0; i < M + 1; i++) {
-        n->children[i] = nullptr; // Initialiser les pointeurs enfants
-      }
-    }
-
     return n;
   }
 
@@ -54,6 +49,15 @@ public:
   bool is_branch() { return !is_leaf(); }
   bool is_root() { return parent == nullptr; }
   bool is_overflowing() { return count > M; }
+  void set_child(int i, Node* child) {
+    assert(kind == BRANCH);
+    assert(i < M + 1);
+    assert(child != nullptr);
+
+    children[i] = child;
+    child->id_in_parent = i;
+    child->parent = this;
+  }
   void recalculate_mbr() {
     if (count == 0)
       return;
@@ -74,6 +78,7 @@ public:
   void insert(Item item);
 
 private:
+  int best_child(Node* node, Item item);
   void handle_overflow(Node* node);
   void search_rec(Node* node, Rect window, std::vector<Item>& results);
   void insert_rec(Node* node, Item item);

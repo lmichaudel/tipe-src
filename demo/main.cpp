@@ -25,7 +25,7 @@ void draw_tree_rec(App* s, Node* node, int depth = 0) {
 }
 void draw(App* s) {
   for (int i = 0; i < ITEM_COUNT; i++) {
-    draw_circle(s, ITEMS[i].x, ITEMS[i].y, 3);
+    draw_circle(s, ITEMS[i].x, ITEMS[i].y, 3.0f);
   }
 
   draw_tree_rec(s, tree.root);

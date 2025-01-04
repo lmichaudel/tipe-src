@@ -22,9 +22,9 @@ App* create_application();
 void run(App* s, void draw(App*));
 void close(App* s);
 
-void draw_rect(App* s, float x, float y, float h, float w, int r = 0,
-               int g = 255, int b = 0, int a = 255);
-void draw_vector(App* s, float x, float y, float dx, float dy);
-void draw_circle(App* s, int x, int y, int radius);
+void draw_rect(App* s, float x, float y, float h, float w, uint8_t r = 0,
+               uint8_t g = 255, uint8_t b = 0, uint8_t a = 255);
+void draw_vector(App* s, int x, int y, int dx, int dy);
+void draw_circle(App* s, float x, float y, float radius);
 
 #endif // GFX_H

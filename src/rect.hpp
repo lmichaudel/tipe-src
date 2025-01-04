@@ -10,7 +10,6 @@ public:
   float area() const;
   float perimeter() const;
   float augmentation(const Rect& r);
-  bool contains(int x, int y);
 };
 
 bool intersect(const Rect& r1, const Rect& r2);
