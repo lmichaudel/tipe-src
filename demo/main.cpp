@@ -8,15 +8,17 @@ void init() {
   srand(136399342);
   for (int i = 0; i < ITEM_COUNT; i++) {
     ITEMS[i].id = i + 1;
-    ITEMS[i].x = rand() % 600 + 30;
-    ITEMS[i].y = rand() % 400 + 30;
+    ITEMS[i].x = rand() % (WIDTH - 50) + 30;
+    ITEMS[i].y = rand() % (HEIGHT - 30) + 10;
   }
 }
 
 void draw_tree_rec(App* s, Node* node, int depth = 0) {
-  draw_rect(s, node->mbr.a_x, node->mbr.a_y, node->mbr.b_y - node->mbr.a_y,
-            node->mbr.b_x - node->mbr.a_x, 0, 0, 0);
 
+  if (node->kind == LEAF) {
+    draw_rect(s, node->mbr.a_x, node->mbr.a_y, node->mbr.b_y - node->mbr.a_y,
+              node->mbr.b_x - node->mbr.a_x, 0, 0, 0);
+  }
   if (node->kind == BRANCH) {
     for (int i = 0; i < node->count; i++) {
       draw_tree_rec(s, node->children[i], depth + 1);
@@ -25,7 +27,7 @@ void draw_tree_rec(App* s, Node* node, int depth = 0) {
 }
 void draw(App* s) {
   for (int i = 0; i < ITEM_COUNT; i++) {
-    draw_circle(s, ITEMS[i].x, ITEMS[i].y, 3.0f);
+    draw_circle(s, ITEMS[i].x, ITEMS[i].y, 1.f);
   }
 
   draw_tree_rec(s, tree.root);
