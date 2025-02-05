@@ -2,8 +2,8 @@
 #define RTREE_HPP
 
 #define ITEM_COUNT 6000
-#define M 7
-#define UTILIZATION_FACTOR 0.30f
+#define M 10
+#define UTILIZATION_FACTOR 0.40f
 
 #include "rect.hpp"
 

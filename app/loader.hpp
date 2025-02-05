@@ -10,7 +10,7 @@
 using json = nlohmann::json;
 
 inline std::vector<std::pair<double, double>>
-parse_geo_json(const std::string& filename) {
+parse_geo_json(const std::string& filename, int sample_size) {
   std::vector<std::pair<double, double>> v;
   std::ifstream file(filename);
   if (!file.is_open()) {
@@ -21,7 +21,12 @@ parse_geo_json(const std::string& filename) {
   json geojson;
   file >> geojson;
 
+  int i = 0;
   for (const auto& feature : geojson["features"]) {
+    i++;
+    if (i > sample_size)
+      break;
+
     json coordinates = feature["geometry"]["coordinates"];
 
     double lon = coordinates[0].get<double>();
@@ -31,40 +36,11 @@ parse_geo_json(const std::string& filename) {
   return v;
 }
 
-inline std::vector<std::pair<double, double>>
-parse_csv(const std::string& filename) {
-  std::vector<std::pair<double, double>> v;
-  std::ifstream file(filename);
+inline SDL_Texture* load_texture(App* app, const std::string& filename) {
+  SDL_Surface* surface = IMG_Load(filename.c_str());
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(app->renderer, surface);
+  SDL_FreeSurface(surface);
 
-  if (!file.is_open()) {
-    std::cerr << "Error: Cannot open file." << std::endl;
-    return v;
-  }
-
-  std::string line;
-  bool headerSkipped = false;
-
-  while (getline(file, line)) {
-    if (!headerSkipped) { // Skip the first line if it contains headers
-      headerSkipped = true;
-      continue;
-    }
-
-    std::stringstream ss(line);
-    std::string latStr, lonStr;
-
-    if (getline(ss, latStr, ';') && getline(ss, lonStr, ';')) {
-      try {
-        double lat = stod(latStr);
-        double lon = stod(lonStr);
-        v.push_back(std::pair(lat, lon));
-      } catch (const std::exception& e) {
-        std::cerr << "Skipping invalid line: " << line << std::endl;
-      }
-    }
-  }
-
-  file.close();
-  return v;
+  return texture;
 }
 #endif // LOADER_HPP
