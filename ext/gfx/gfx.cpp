@@ -7,6 +7,7 @@ App* create_application() {
   s->window = SDL_CreateWindow("TIPE", SDL_WINDOWPOS_CENTERED,
                                SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, 0);
   s->renderer = SDL_CreateRenderer(s->window, -1, SDL_RENDERER_ACCELERATED);
+  SDL_SetRenderDrawBlendMode(s->renderer, SDL_BLENDMODE_BLEND);
   s->running = false;
   s->tick = 0;
 
@@ -16,7 +17,7 @@ App* create_application() {
 void run(App* s, void draw(App*)) {
   s->running = true;
 
-  SDL_SetRenderDrawColor(s->renderer, 255, 255, 255, 255);
+  SDL_SetRenderDrawColor(s->renderer, BACKGROUND_TINT, BACKGROUND_TINT, BACKGROUND_TINT, 0);
   SDL_RenderClear(s->renderer);
 
   draw(s);
@@ -83,8 +84,9 @@ void draw_vector(App* s, int x, int y, int dx, int dy) {
   SDL_RenderDrawLine(s->renderer, endX, endY, arrowPoint2X, arrowPoint2Y);
 }
 
-void draw_circle(App* s, float x, float y, float radius) {
-  SDL_SetRenderDrawColor(s->renderer, 255, 0, 0, 255);
+void draw_circle(App* s, float x, float y, float radius, uint8_t r,
+               uint8_t g, uint8_t b, uint8_t a) {
+  SDL_SetRenderDrawColor(s->renderer, r, g, b, a);
 
   int status = 0;
   int offsetx = 0;
