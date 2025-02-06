@@ -1,8 +1,7 @@
 #ifndef RTREE_HPP
 #define RTREE_HPP
 
-#define ITEM_COUNT 6000
-#define M 10
+#define M 4
 #define UTILIZATION_FACTOR 0.40f
 
 #include "rect.hpp"
@@ -64,6 +63,13 @@ public:
     mbr = kind == BRANCH ? children[0]->mbr : data[0].as_rect();
     for (int i = 0; i < count; i++) {
       mbr = merge(mbr, kind == BRANCH ? children[i]->mbr : data[i].as_rect());
+    }
+  }
+
+  void recalculate_mbr_sift_up () {
+    recalculate_mbr();
+    if(parent != nullptr) {
+      parent->recalculate_mbr_sift_up();
     }
   }
 };

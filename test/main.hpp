@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "gfx.hpp"
+#include "gfx/gfx.hpp"
 #include "rtree.hpp"
 
 void init(void);

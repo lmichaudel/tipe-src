@@ -30,4 +30,14 @@ inline std::vector<std::pair<double, double>> readBinaryFile(const std::string& 
   return coordinates;
 }
 
+inline std::pair<float, float> coord_to_pixel(const std::pair<double, double>& coord) {
+  const double xNorm = (coord.second - MIN_LON) / (MAX_LON - MIN_LON);
+  const double yNorm = 1.0 - (coord.first - MIN_LAT) / (MAX_LAT - MIN_LAT);
+
+  float x = (xNorm * WIDTH);
+  float y = (yNorm * HEIGHT);
+
+  return {x, y};
+}
+
 #endif // MAIN_HPP

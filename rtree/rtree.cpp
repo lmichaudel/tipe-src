@@ -20,6 +20,7 @@ void RTree::handle_overflow(Node* node) {
   Node* parent = node->parent;
   int id_in_parent = node->id_in_parent;
   auto [u, v] = split_exp(node);
+
   delete node;
 
   if (parent == nullptr) {
@@ -32,12 +33,14 @@ void RTree::handle_overflow(Node* node) {
     parent->set_child(id_in_parent, u);
     parent->set_child(parent->count, v);
     parent->count++;
-    parent->recalculate_mbr();
 
     if (parent->is_overflowing()) {
       handle_overflow(parent);
     }
   }
+
+  u->recalculate_mbr_sift_up();
+  v->recalculate_mbr_sift_up();
 }
 
 void RTree::insert_rec(Node* node, Item item) {
@@ -48,6 +51,8 @@ void RTree::insert_rec(Node* node, Item item) {
 
     if (node->is_overflowing()) {
       handle_overflow(node);
+    } else {
+      node->recalculate_mbr_sift_up();
     }
   } else {
     insert_rec(node->children[best_child(node, item)], item);

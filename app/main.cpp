@@ -1,26 +1,75 @@
 #include "main.hpp"
 
-#define SAMPLE_SIZE 2500
+#define SAMPLE_SIZE 500000 // 2500
 
 RTree tree;
-Item ITEMS[ITEM_COUNT];
-std::vector<std::pair<double, double>> data;
-SDL_Texture* mapTexture;
+Rect window = {300, 300, 600, 400};
 
-std::pair<int, int> coord_to_pixel(const std::pair<double, double>& coord) {
-  double xNorm = (coord.second - MIN_LON) / (MAX_LON - MIN_LON);
-  double yNorm = 1.0 - (coord.first - MIN_LAT) / (MAX_LAT - MIN_LAT);
+Item items[SAMPLE_SIZE];
 
-  int x = static_cast<int>(xNorm * WIDTH);
-  int y = static_cast<int>(yNorm * HEIGHT);
+void load_database () {
+  const std::vector<std::pair<double, double>> data = readBinaryFile("app/input");
 
-  return {x, y};
+  const auto t1 = Clock::now();
+
+  for(int i = 0; i < SAMPLE_SIZE; i++) {
+    auto [x, y] = coord_to_pixel(data.data()[i]);
+    items[i] = {x, y, i};
+  }
+
+  std::cout << "Loaded " << SAMPLE_SIZE << " entries in " <<
+    std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - t1).count()
+      << " milliseconds." << std::endl;
+}
+
+void construct_tree () {
+  const auto t1 = Clock::now();
+
+  tree.root->mbr = Rect(items[0].as_rect());
+  for (const auto item : items) {
+    if (item.x < 0 || item.x > WIDTH || item.y < 0 || item.y > HEIGHT) {
+      continue;
+    }
+    tree.insert(item);
+  }
+
+  std::cout << "Constructed the R-Tree in "
+    << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - t1).count()
+      << " milliseconds." << std::endl;
+}
+
+std::vector<Item> query_rtree() {
+  const auto t1 = Clock::now();
+  std::vector<Item> query = tree.search(window);
+
+  std::cout << "Queried (R-Tree) " << query.size() << " items in "
+  << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - t1).count()
+    << " milliseconds." << std::endl;
+
+  return query;
+}
+
+std::vector<Item> query_naive() {
+  const auto t1 = Clock::now();
+  std::vector<Item> query;
+
+  for (auto item : items) {
+    if (intersect(item.as_rect(), window)) {
+      query.push_back(item);
+    }
+  }
+
+  std::cout << "Queried (Naive) " << query.size() << " items in "
+  << std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - t1).count()
+    << " milliseconds." << std::endl;
+
+  return query;
 }
 
 void draw_tree_rec(App* s, Node* node, int depth = 0) {
   if (node->kind == LEAF) {
     draw_rect(s, node->mbr.a_x, node->mbr.a_y, node->mbr.b_y - node->mbr.a_y,
-              node->mbr.b_x - node->mbr.a_x, 0, 0, 0);
+              node->mbr.b_x - node->mbr.a_x, 0, 0, 0, 255);
   }
   if (node->kind == BRANCH) {
     for (int i = 0; i < node->count; i++) {
@@ -30,35 +79,26 @@ void draw_tree_rec(App* s, Node* node, int depth = 0) {
 }
 
 void draw(App* s) {
-  for (auto entry : data) {
-    auto [x, y] = coord_to_pixel(entry);
-    draw_circle(s, x, y, 1.f);
+  draw_tree_rec(s, tree.root);
+  for (const auto [x, y, id] : items) {
+    draw_circle(s, x, y, .5f, 255, 0, 0, 100);
   }
 
-  draw_tree_rec(s, tree.root);
 
+  std::vector<Item> query1 = query_naive();
+  std::vector<Item> query2 = query_rtree();
+
+  draw_rect(s, window.a_x, window.a_y, window.b_y - window.a_y, window.b_x - window.a_x, 255, 255, 255, 255);
+  for (const auto [x, y, id] : query1) {
+    draw_circle(s, x, y, .5f, 0, 255, 0, 255);
+  }
 }
 
 int main() {
   App* s = create_application();
 
-  auto t1 = Clock::now();
-  data = readBinaryFile("app/input");
-  auto t2 = Clock::now();
-  std::cout << "Loaded " << data.size() << " entries in " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()<< " milliseconds." << std::endl;
-
-  t1 = Clock::now();
-  auto [x0, y0] = coord_to_pixel(data.data()[0]);
-  tree.root->mbr = Rect(x0, y0, x0, y0);
-  for (int i = 0; i < SAMPLE_SIZE; i++) {
-    auto [x, y] = coord_to_pixel(data.data()[i]);
-    if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) { // Hawaii !
-      continue;
-    }
-    tree.insert(Item{static_cast<float>(x), static_cast<float>(y), i});
-  }
-  t2 = Clock::now();
-  std::cout << "Built tree in " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()<< " milliseconds." << std::endl;
+  load_database();
+  construct_tree();
 
   run(s, draw);
   return 0;
