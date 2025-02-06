@@ -1,26 +1,20 @@
 #include "main.hpp"
-#include "loader.hpp"
 
 #define SAMPLE_SIZE 2500
+
 RTree tree;
 Item ITEMS[ITEM_COUNT];
 std::vector<std::pair<double, double>> data;
-
 SDL_Texture* mapTexture;
 
 std::pair<int, int> coord_to_pixel(const std::pair<double, double>& coord) {
-  double xNorm = (coord.first - MIN_LON) / (MAX_LON - MIN_LON);
-  double yNorm = 1.0 - (coord.second - MIN_LAT) / (MAX_LAT - MIN_LAT);
+  double xNorm = (coord.second - MIN_LON) / (MAX_LON - MIN_LON);
+  double yNorm = 1.0 - (coord.first - MIN_LAT) / (MAX_LAT - MIN_LAT);
 
   int x = static_cast<int>(xNorm * WIDTH);
   int y = static_cast<int>(yNorm * HEIGHT);
 
   return {x, y};
-}
-
-void init(App* s) {
-  mapTexture = load_texture(s, "app/usa.png");
-  data = parse_geo_json("app/chainness.geojson", SAMPLE_SIZE);
 }
 
 void draw_tree_rec(App* s, Node* node, int depth = 0) {
@@ -36,34 +30,36 @@ void draw_tree_rec(App* s, Node* node, int depth = 0) {
 }
 
 void draw(App* s) {
-  // SDL_Rect mapRect = {0, 0, WIDTH, HEIGHT};
-  // SDL_RenderCopy(s->renderer, mapTexture, nullptr, &mapRect);
-
   for (auto entry : data) {
     auto [x, y] = coord_to_pixel(entry);
     draw_circle(s, x, y, 1.f);
   }
 
   draw_tree_rec(s, tree.root);
+
 }
 
 int main() {
   App* s = create_application();
-  init(s);
 
-  std::cout << "Loaded " << data.size() << " locations." << std::endl;
+  auto t1 = Clock::now();
+  data = readBinaryFile("input");
+  auto t2 = Clock::now();
+  std::cout << "Loaded " << data.size() << " entries in " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()<< " milliseconds." << std::endl;
 
+  t1 = Clock::now();
   auto [x0, y0] = coord_to_pixel(data.data()[0]);
   tree.root->mbr = Rect(x0, y0, x0, y0);
-  for (int i = 0; i < data.size(); i++) {
+  for (int i = 0; i < SAMPLE_SIZE; i++) {
     auto [x, y] = coord_to_pixel(data.data()[i]);
     if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT) { // Hawaii !
       continue;
     }
     tree.insert(Item{static_cast<float>(x), static_cast<float>(y), i});
   }
+  t2 = Clock::now();
+  std::cout << "Built tree in " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()<< " milliseconds." << std::endl;
 
   run(s, draw);
-
   return 0;
 }
