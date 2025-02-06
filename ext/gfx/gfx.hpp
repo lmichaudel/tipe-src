@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <stdbool.h>
 
-#define BACKGROUND_TINT 43
+#define BACKGROUND_TINT 255
 
 #define WIDTH 1280
 #define HEIGHT 720

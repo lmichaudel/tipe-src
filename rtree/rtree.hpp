@@ -1,7 +1,7 @@
 #ifndef RTREE_HPP
 #define RTREE_HPP
 
-#define M 4
+#define M 7
 #define UTILIZATION_FACTOR 0.40f
 
 #include "rect.hpp"

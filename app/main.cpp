@@ -1,9 +1,9 @@
 #include "main.hpp"
 
-#define SAMPLE_SIZE 500000 // 2500
+#define SAMPLE_SIZE 500000
 
 RTree tree;
-Rect window = {300, 300, 600, 400};
+Rect window = {550, 250, 650, 400};
 
 Item items[SAMPLE_SIZE];
 
@@ -69,7 +69,7 @@ std::vector<Item> query_naive() {
 void draw_tree_rec(App* s, Node* node, int depth = 0) {
   if (node->kind == LEAF) {
     draw_rect(s, node->mbr.a_x, node->mbr.a_y, node->mbr.b_y - node->mbr.a_y,
-              node->mbr.b_x - node->mbr.a_x, 0, 0, 0, 255);
+              node->mbr.b_x - node->mbr.a_x, 0, 0, 0, 50);
   }
   if (node->kind == BRANCH) {
     for (int i = 0; i < node->count; i++) {
@@ -88,9 +88,9 @@ void draw(App* s) {
   std::vector<Item> query1 = query_naive();
   std::vector<Item> query2 = query_rtree();
 
-  draw_rect(s, window.a_x, window.a_y, window.b_y - window.a_y, window.b_x - window.a_x, 255, 255, 255, 255);
+  draw_rect(s, window.a_x, window.a_y, window.b_y - window.a_y, window.b_x - window.a_x, 0, 0, 255, 255);
   for (const auto [x, y, id] : query1) {
-    draw_circle(s, x, y, .5f, 0, 255, 0, 255);
+    draw_circle(s, x, y, .7f, 0, 255, 0, 255);
   }
 }
 
