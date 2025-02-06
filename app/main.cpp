@@ -43,7 +43,7 @@ int main() {
   App* s = create_application();
 
   auto t1 = Clock::now();
-  data = readBinaryFile("input");
+  data = readBinaryFile("app/input");
   auto t2 = Clock::now();
   std::cout << "Loaded " << data.size() << " entries in " << std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count()<< " milliseconds." << std::endl;
 
