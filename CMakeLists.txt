@@ -27,6 +27,8 @@ target_link_libraries(gfx ${SDL2_LIBRARIES} /opt/homebrew/Cellar/sdl2_image/2.8.
 add_executable(test test/main.hpp test/main.cpp)
 target_link_libraries(test gfx rtree)
 
+### BUILD DATABASE_COMPILE
+add_executable(db_compile app/db_compile.cpp)
 ### BUILD APP
 add_executable(app app/main.hpp app/main.cpp)
 target_link_libraries(app gfx rtree)
