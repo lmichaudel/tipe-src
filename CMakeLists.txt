@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+set(CMAKE_CXX_STANDARD 17)
 project(TIPE LANGUAGES CXX)
 
 add_compile_options(-Wall -pedantic -fsanitize=address)

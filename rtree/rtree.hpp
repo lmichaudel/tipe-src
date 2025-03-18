@@ -55,6 +55,7 @@ public:
   bool is_branch() { return !is_leaf(); }
   bool is_root() { return parent == nullptr; }
   bool is_overflowing() { return count > M; }
+
   void set_child(int i, Node* child) {
     assert(kind == BRANCH);
     assert(i < M + 1);
@@ -64,6 +65,7 @@ public:
     child->id_in_parent = i;
     child->parent = this;
   }
+
   void recalculate_mbr() {
     if (count == 0)
       return;

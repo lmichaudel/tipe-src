@@ -4,6 +4,7 @@
 #include <iostream>
 
 #define PARTITION_COUNT (1 << (M + 1))
+
 int get_best_mask_exponential(Rect rects[M + 1]) {
   int current_best = 0;
   double current_best_value = std::numeric_limits<double>::max();
@@ -114,7 +115,7 @@ std::pair<Node*, Node*> split(Node* node, SplitHeuristic heuristic) {
         node->kind == BRANCH ? node->children[i]->mbr : node->data[i].as_rect();
   }
 
-  int mask;
+  int mask = 0;
   switch (heuristic) {
   case LINEAR:
     mask = get_best_mask_linear(rects);
