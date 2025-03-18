@@ -1,10 +1,11 @@
 #include "main.hpp"
 
-#include <iostream>
+#include "gfx/gfx.hpp"
+#include "rtree.hpp"
 
-#define ITEM_COUNT 100000
+#define ITEM_COUNT 100
 
-RTree tree;
+RTree tree {LINEAR};
 
 Item ITEMS[ITEM_COUNT];
 Rect window = {300, 160, 520, 380};
@@ -26,7 +27,7 @@ void draw_tree_rec(App* s, Node* node, int depth = 0) {
 
   if (node->kind == BRANCH) {
     for (int i = 0; i < node->count; i++) {
-       draw_tree_rec(s, node->children[i], depth + 1);
+      draw_tree_rec(s, node->children[i], depth + 1);
     }
   }
 }
@@ -34,10 +35,11 @@ void draw(App* s) {
   draw_tree_rec(s, tree.root);
 
   for (int i = 0; i < ITEM_COUNT; i++) {
-    draw_circle(s, ITEMS[i].x, ITEMS[i].y, .5f);
+    draw_circle(s, ITEMS[i].x, ITEMS[i].y, 1.f);
   }
 
-  draw_rect(s, window.a_x, window.a_y, window.b_y - window.a_y, window.b_x - window.a_x, 255, 255, 255, 255);
+  draw_rect(s, window.a_x, window.a_y, window.b_y - window.a_y,
+            window.b_x - window.a_x, 255, 255, 255, 255);
 
   std::vector<Item> query = tree.search(window);
   for (auto entry : query) {

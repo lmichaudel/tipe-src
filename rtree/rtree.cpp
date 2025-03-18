@@ -6,7 +6,7 @@ int RTree::best_child(Node* node, Item item) {
   double min_augment = std::numeric_limits<double>::max();
 
   for (int i = 0; i < node->count; i++) {
-    float augment = node->children[i]->mbr.augmentation(item.as_rect());
+    double augment = node->children[i]->mbr.augmentation(item.as_rect());
     if (augment < min_augment) {
       min_augment = augment;
       id = i;
@@ -19,7 +19,7 @@ int RTree::best_child(Node* node, Item item) {
 void RTree::handle_overflow(Node* node) {
   Node* parent = node->parent;
   int id_in_parent = node->id_in_parent;
-  auto [u, v] = split_exp(node);
+  auto [u, v] = split(node, heuristic);
 
   delete node;
 
@@ -59,7 +59,8 @@ void RTree::insert_rec(Node* node, Item item) {
   }
 }
 
-void RTree::search_rec(Node* node, Rect window, std::vector<Item>& results) {
+static void search_rec(Node* node, Rect window, std::vector<Item>& results,
+                       int d) {
   if (intersect(node->mbr, window)) {
     if (node->is_leaf()) {
       for (int i = 0; i < node->count; i++) {
@@ -69,7 +70,7 @@ void RTree::search_rec(Node* node, Rect window, std::vector<Item>& results) {
       }
     } else {
       for (int i = 0; i < node->count; i++) {
-        search_rec(node->children[i], window, results);
+        search_rec(node->children[i], window, results, d + 1);
       }
     }
   }
@@ -77,18 +78,18 @@ void RTree::search_rec(Node* node, Rect window, std::vector<Item>& results) {
 
 std::vector<Item> RTree::search(Rect window) {
   std::vector<Item> result;
-  search_rec(root, window, result);
+  search_rec(root, window, result, 0);
   return result;
 }
 
 void RTree::insert(Item item) { insert_rec(root, item); }
 
-RTree::RTree() {
+RTree::RTree(SplitHeuristic _heuristic) {
   auto n = Node::empty(LEAF, nullptr);
 
   n->count = 0;
   n->mbr = Rect(0, 0, 0, 0);
-
+  heuristic = _heuristic;
   root = n;
 }
 

@@ -1,8 +1,9 @@
 #ifndef RTREE_HPP
 #define RTREE_HPP
 
-#define M 7
+#define M 20
 #define UTILIZATION_FACTOR 0.40f
+#define m (M * UTILIZATION_FACTOR)
 
 #include "rect.hpp"
 
@@ -14,9 +15,15 @@ typedef enum Kind {
   BRANCH = 2,
 } Kind;
 
+typedef enum SplitHeuristic {
+  LINEAR = 1,
+  QUADRATIC = 2,
+  EXPONENTIAL = 3,
+} SplitHeuristic;
+
 typedef struct Item {
-  float x;
-  float y;
+  double x;
+  double y;
   int id;
 
   Rect as_rect() { return Rect{x, y, x, y}; }
@@ -66,9 +73,9 @@ public:
     }
   }
 
-  void recalculate_mbr_sift_up () {
+  void recalculate_mbr_sift_up() {
     recalculate_mbr();
-    if(parent != nullptr) {
+    if (parent != nullptr) {
       parent->recalculate_mbr_sift_up();
     }
   }
@@ -77,8 +84,9 @@ public:
 class RTree {
 public:
   Node* root;
+  SplitHeuristic heuristic;
 
-  RTree();
+  RTree(SplitHeuristic _heuristic);
   ~RTree();
 
   std::vector<Item> search(Rect window);
@@ -87,7 +95,6 @@ public:
 private:
   int best_child(Node* node, Item item);
   void handle_overflow(Node* node);
-  void search_rec(Node* node, Rect window, std::vector<Item>& results);
   void insert_rec(Node* node, Item item);
 };
 

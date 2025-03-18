@@ -1,4 +1,5 @@
 #include "gfx.hpp"
+#include <SDL_timer.h>
 
 App* create_application() {
   App* s = new App;
@@ -17,7 +18,8 @@ App* create_application() {
 void run(App* s, void draw(App*)) {
   s->running = true;
 
-  SDL_SetRenderDrawColor(s->renderer, BACKGROUND_TINT, BACKGROUND_TINT, BACKGROUND_TINT, 0);
+  SDL_SetRenderDrawColor(s->renderer, BACKGROUND_TINT, BACKGROUND_TINT,
+                         BACKGROUND_TINT, 0);
   SDL_RenderClear(s->renderer);
 
   draw(s);
@@ -34,9 +36,12 @@ void run(App* s, void draw(App*)) {
         break;
       }
     }
+
+    SDL_Delay(100);
   }
 
   SDL_DestroyWindow(s->window);
+  SDL_DestroyRenderer(s->renderer);
   SDL_Quit();
   delete s;
 }
@@ -84,8 +89,8 @@ void draw_vector(App* s, int x, int y, int dx, int dy) {
   SDL_RenderDrawLine(s->renderer, endX, endY, arrowPoint2X, arrowPoint2Y);
 }
 
-void draw_circle(App* s, float x, float y, float radius, uint8_t r,
-               uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle(App* s, float x, float y, float radius, uint8_t r, uint8_t g,
+                 uint8_t b, uint8_t a) {
   SDL_SetRenderDrawColor(s->renderer, r, g, b, a);
 
   int status = 0;

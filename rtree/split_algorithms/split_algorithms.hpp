@@ -3,6 +3,10 @@
 
 #include "rtree.hpp"
 
-std::pair<Node*, Node*> split_exp(Node* node);
+int get_best_mask_exponential(Rect rects[M + 1]);
+int get_best_mask_quadratic(Rect rects[M + 1]);
+int get_best_mask_linear(Rect rects[M + 1]);
+
+std::pair<Node*, Node*> split(Node* node, SplitHeuristic heuristic);
 
 #endif // SPLIT_ALGORITHMS_HPP
