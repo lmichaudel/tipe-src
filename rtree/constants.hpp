@@ -1,0 +1,8 @@
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
+
+#define M 20
+#define UTILIZATION_FACTOR 0.40f
+#define m (M * UTILIZATION_FACTOR)
+
+#endif //CONSTANTS_HPP

@@ -14,8 +14,8 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_PATH}/include rtree/ ext/)
 
 ### BUILD RTREE
 add_library(rtree
-        rtree/rect.hpp
-        rtree/rect.cpp
+        rtree/rect/rect.hpp
+        rtree/rect/rect.cpp
         rtree/rtree.hpp
         rtree/rtree.cpp
         rtree/split_algorithms/growable_rect.hpp

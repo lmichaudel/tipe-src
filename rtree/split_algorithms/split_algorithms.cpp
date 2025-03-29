@@ -51,7 +51,7 @@ int get_best_mask_quadratic(Rect rects[M + 1]) {
   insert(rects[bi], &b);
   mask = flag(mask, bj);
 
-  std::vector<Rect> remaining(0);
+  std::vector<Rect> remaining = {};
 
   for (int i = 0; i < remaining.size(); i++) {
     if (i != bj && i != bi) {
